@@ -8,22 +8,22 @@
 namespace DGTCM {
     class PhysicalModel {
     public:
-        PhysicalModel(double lengthX, double lengthY, double lengthZ,  unsigned int numXElements,  unsigned int numYElements,  unsigned int numZElements, double initialTemperature, double fluidTemperature, double alpha, double rho, double Cp, double beta):
+        PhysicalModel(double lengthX, double lengthY, double lengthZ,  unsigned int numXElements,  unsigned int numYElements,  unsigned int numZElements, double initialTemperature, double fluidTemperature, double rho,  double beta):
                 _LengthX(lengthX), _LengthY(lengthY), _LengthZ(lengthZ),
                 _NumXElements(numXElements), _NumYElements(numYElements), _NumZElements(numZElements),
                 _initialTemperature(initialTemperature), _fluidTemperature(fluidTemperature),
-                _alpha(alpha),_rho(rho), _Cp(Cp), _beta(beta) {
-            _ElementXDistance = lengthX / numXElements;
-            _ElementYDistance = lengthY / numYElements;
-            _ElementZDistance = lengthZ / numZElements;
+               _rho(rho), _beta(beta) {
+            _ElementXDistance = _LengthX / _NumXElements;
+            _ElementYDistance = _LengthY / _NumYElements;
+            _ElementZDistance = _LengthZ / _NumZElements;
 
-            _ElementVolume = lengthX * lengthY * lengthZ / (numXElements * numYElements * numZElements);
-            _ElementXArea = lengthY * lengthZ / (numYElements * numZElements);
-            _ElementYArea = lengthX * lengthZ / (numXElements * numZElements);
-            _ElementZArea = lengthX * lengthY / (numXElements * numYElements);
-            _ElementXDistance = lengthX / numXElements;
-            _ElementYDistance = lengthY / numYElements;
-            _ElementZDistance = lengthZ / numZElements;
+            _ElementVolume = _LengthX * _LengthY * _LengthZ / (_NumXElements * _NumYElements * _NumZElements);
+            _ElementXArea = _LengthY * _LengthZ / (_NumYElements * _NumZElements);
+            _ElementYArea = _LengthX * _LengthZ / (_NumXElements * _NumZElements);
+            _ElementZArea = _LengthX * _LengthY / (_NumXElements * _NumYElements);
+            _ElementXDistance = _LengthX / _NumXElements;
+            _ElementYDistance = _LengthY / _NumYElements;
+            _ElementZDistance = _LengthZ / _NumZElements;
         }
 
         double nX() const { return _NumXElements; }
@@ -37,19 +37,15 @@ namespace DGTCM {
         double dY() const { return _ElementYDistance; }
         double dZ() const { return _ElementZDistance; }
         double initialTemp() const { return _initialTemperature; }
-        double alpha() const { return _alpha; }
         double fluidTemp() const {  return _fluidTemperature; }
         double beta() const { return _beta; }
         double rho() const { return _rho; }
-        double Cp() const { return _Cp; }
 
 
     private:
         double _initialTemperature;
         double _fluidTemperature;
-        double _alpha;
         double _rho;
-        double _Cp;
         double _beta;
         double _LengthX;
         double _LengthY;

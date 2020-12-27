@@ -40,7 +40,7 @@ Solver::~Solver() {
 
 }
 void Solver::Initialize() {
-    m_physical = new PhysicalModel(0.25, 0.2, 0.1, 50, 40, 20, 1200.0, 300.0, 15000, 8050.0, 420, 0.5);
+    m_physical = new PhysicalModel(0.25, 0.2, 0.1, 50, 40, 20, 1200.0, 300.0, 7833.0, 1);
     m_Tn = new Matrix(m_physical->nX(), m_physical->nY(), m_physical->nZ(), m_physical->initialTemp());
     m_Tn1 = new Matrix(m_physical->nX(), m_physical->nY(), m_physical->nZ(), m_physical->initialTemp());
     m_Tsup = new Matrix(m_physical->nX(), m_physical->nY(), m_physical->nZ(), m_physical->initialTemp());
@@ -131,15 +131,15 @@ double Solver::ComputeBp(unsigned int x, unsigned int y, unsigned int z) {
 
 // Heat trtansfer at boundary = alpha * A Tn-Tfluid
 double Solver::QnBoundaryCondition(unsigned int x, unsigned int y, unsigned int z) {
-    return m_physical->alpha()*GetSurfaceArea(x,y,z)*(m_physical->fluidTemp() -  m_Tn->operator()(x,y,z));
+    return Alpha(x,y,z)*GetSurfaceArea(x,y,z)*(m_physical->fluidTemp() -  m_Tn->operator()(x,y,z));
 }
 
 double Solver::ApBoundaryCondition(unsigned int x, unsigned int y, unsigned int z) {
-    return m_physical->beta()*m_physical->alpha()*GetSurfaceArea(x,y,z);
+    return m_physical->beta()*Alpha(x,y,z)*GetSurfaceArea(x,y,z);
 }
 
 double Solver::BpBoundaryCondition(unsigned int x, unsigned int y, unsigned int z) {
-    return m_physical->beta()*m_physical->alpha()*m_physical->fluidTemp()*GetSurfaceArea(x,y,z);
+    return m_physical->beta()*Alpha(x,y,z)*m_physical->fluidTemp()*GetSurfaceArea(x,y,z);
 }
 
 
@@ -223,39 +223,34 @@ double Solver::GetSurfaceArea(unsigned int x, unsigned int y, unsigned int z) {
 
 
 double Solver::Alpha(unsigned int x, unsigned int y, unsigned int z) {
-    if(ActiveMatrix()->operator()(x,y,z)>1273.15 && ActiveMatrix()->operator()(x,y,z)<=1473.15) { return 650.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>1073.15 && ActiveMatrix()->operator()(x,y,z)<=1273.15) { return 600.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>873.15  && ActiveMatrix()->operator()(x,y,z)<=1073.15) { return 560.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>673.15  && ActiveMatrix()->operator()(x,y,z)<=873.15)  { return 520.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>573.15  && ActiveMatrix()->operator()(x,y,z)<=673.15)  { return 500.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>473.15  && ActiveMatrix()->operator()(x,y,z)<=573.15)  { return 480.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>373.15  && ActiveMatrix()->operator()(x,y,z)<=473.15)  { return 460.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>273.15  && ActiveMatrix()->operator()(x,y,z)<=373.15)  { return 440.0;}
+    double temp = ActiveMatrix()->operator()(x,y,z);
+    if(temp>1273.0) { return 350.0;}
+    if(temp>1173.15 && temp<=1273.15) { return 1100.0;}
+    if(temp>1073.15 && temp<=1173.15) { return 1800.0;}
+    if(temp>973.15 && temp<=1073.15) { return 2400.0;}
+    if(temp>873.15  && temp<=973.15) { return 2600.0;}
+    if(temp>673.15  && temp<=873.15)  { return 2300.0;}
+    if(temp>573.15  && temp<=673.15)  { return 1500.0;}
+    if(temp>473.15  && temp<=573.15)  { return 900.0;}
+    if(temp>373.15  && temp<=473.15)  { return 550.0;}
+    if(temp>273.15  && temp<=373.15)  { return 150.0;}
     return 400.0;
 }
 
 double Solver::Cp(unsigned int x, unsigned int y, unsigned int z) {
-    if(ActiveMatrix()->operator()(x,y,z)>1273.15 && ActiveMatrix()->operator()(x,y,z)<=1473.15) { return 650.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>1073.15 && ActiveMatrix()->operator()(x,y,z)<=1273.15) { return 600.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>873.15  && ActiveMatrix()->operator()(x,y,z)<=1073.15) { return 560.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>673.15  && ActiveMatrix()->operator()(x,y,z)<=873.15)  { return 520.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>573.15  && ActiveMatrix()->operator()(x,y,z)<=673.15)  { return 500.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>473.15  && ActiveMatrix()->operator()(x,y,z)<=573.15)  { return 480.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>373.15  && ActiveMatrix()->operator()(x,y,z)<=473.15)  { return 460.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>273.15  && ActiveMatrix()->operator()(x,y,z)<=373.15)  { return 440.0;}
-    return 400.0;
+    double temp = tempAt(x,y,z);
+    double cp = 487.6;// - 1.57*temp + 2*pow(10.0, -2.0)*pow(temp, 2.0) - 7.69 * pow(10.0, -5.0) * pow(temp, 3.0) +
+    //1.2*pow(10.0, -7.0)*pow(temp, 4.0) - 6.67 * pow(10.0,-11.0)*pow(temp, 5.0);
+    return cp;
 }
 
 
 double Solver::Lambda(unsigned int x, unsigned int y, unsigned int z) {
-    if(ActiveMatrix()->operator()(x,y,z)>1273.15 && ActiveMatrix()->operator()(x,y,z)<=1473.15) { return 49.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>1073.15 && ActiveMatrix()->operator()(x,y,z)<=1273.15) { return 51.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>873.15  && ActiveMatrix()->operator()(x,y,z)<=1073.15) { return 55.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>673.15  && ActiveMatrix()->operator()(x,y,z)<=873.15)  { return 62.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>573.15  && ActiveMatrix()->operator()(x,y,z)<=673.15)  { return 65.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>473.15  && ActiveMatrix()->operator()(x,y,z)<=573.15)  { return 68.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>373.15  && ActiveMatrix()->operator()(x,y,z)<=473.15)  { return 72.0;}
-    if(ActiveMatrix()->operator()(x,y,z)>273.15  && ActiveMatrix()->operator()(x,y,z)<=373.15)  { return 75.0;}
-    return 57.0;
+    double l = 29.0;
+    double temp = ActiveMatrix()->operator()(x,y,z);
+    if (temp < 1273.0) {
+        l += (1273.0-temp)/900.0 * 29;
+    }
+    return l;
 }
 
