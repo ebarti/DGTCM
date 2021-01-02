@@ -31,6 +31,7 @@ public:
     double& operator()(const unsigned &, const unsigned &, const unsigned &);
     double& operator()(const unsigned &);
     double at(const unsigned &, const unsigned &, const unsigned &) const;
+    double at(const unsigned &) const;
 private:
     unsigned m_size_x;
     unsigned m_size_y;

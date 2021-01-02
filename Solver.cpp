@@ -48,16 +48,23 @@ void Solver::Initialize() {
 }
 
 void Solver::Solve() {
+    double reportEveryXSeconds = 5.0;
     Initialize();
     double maxTempInPiece = m_physical->initialTemp();
     double totalTime = 0.0;
+    double lastReportedTime = 0.0;
     double maxTime = 200.0;
     while(totalTime < maxTime && maxTempInPiece > (m_physical->fluidTemp()+30)) {
         totalTime += m_timedelta;
+        lastReportedTime += m_timedelta;
         ComputeQn();
         ComputeTn1(maxTempInPiece);
-        std::cout<<"Current Elapsed time: "<<totalTime<<std::endl;
-        std::cout<<"Current Max internal temperature: "<<maxTempInPiece<<std::endl;
+        if (lastReportedTime >= reportEveryXSeconds) {
+            lastReportedTime = 0.0;
+            std::cout<<"Current Elapsed time: "<<totalTime<<std::endl;
+            std::cout<<"Current Max internal temperature: "<<maxTempInPiece<<std::endl;
+        }
+
         m_Tn->Copy(m_Tn1);
     }
 }
@@ -79,7 +86,9 @@ void Solver::ComputeTn1(double & oMaxTempInPiece) {
                 // Calculate max difference
                 double val = abs(m_Tn1->at(x,y,z) - m_Tsup->at(x,y,z));
                 if(val > maxDiff)
+                {
                     maxDiff = val;
+                }
                 if(m_Tn1->at(x,y,z) > oMaxTempInPiece) oMaxTempInPiece = m_Tn1->at(x,y,z);
             }
         }

@@ -105,17 +105,21 @@ Matrix Matrix::operator/(double A) {
 }
 
 double &Matrix::operator()(const unsigned int & x, const unsigned int & y, const unsigned int & z) {
-    return m_matrix[x + m_size_y * (y + m_size_z * z)];
+    return m_matrix[x + m_size_x * (y + m_size_y * z)];
 }
 
 double Matrix::at(const unsigned int & x, const unsigned int & y, const unsigned int & z) const{
-    return m_matrix[x + m_size_y * (y + m_size_z * z)];
+    return m_matrix[x + m_size_x * (y + m_size_y * z)];
+}
+
+double Matrix::at(const unsigned int & idx) const{
+    return m_matrix[idx];
 }
 
 
 void Matrix::Copy(Matrix *otherMatrix) {
     for (unsigned idx = 0; idx < m_size_x * m_size_y * m_size_z; idx++) {
-        this->m_matrix[idx] = otherMatrix->m_matrix[idx];
+        this->m_matrix[idx] = otherMatrix->at(idx);
     }
 }
 
