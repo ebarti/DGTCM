@@ -78,7 +78,8 @@ void Solver::ComputeTn1(double & oMaxTempInPiece) {
                 m_Tn1->operator()(x,y,z) = (AiTi + Bp) / Ap;
                 // Calculate max difference
                 double val = abs(m_Tn1->at(x,y,z) - m_Tsup->at(x,y,z));
-                if(val > maxDiff) maxDiff = val;
+                if(val > maxDiff)
+                    maxDiff = val;
                 if(m_Tn1->at(x,y,z) > oMaxTempInPiece) oMaxTempInPiece = m_Tn1->at(x,y,z);
             }
         }
@@ -223,8 +224,10 @@ double Solver::GetSurfaceArea(unsigned int x, unsigned int y, unsigned int z) {
 
 
 double Solver::Alpha(unsigned int x, unsigned int y, unsigned int z) {
+    //Alpha = -5561.455 + 53.22458*temp - 0.1940006*temp^2 + 0.0003336*temp^3 - 2.548565e-7*temp^4 + 6.988594e-11*temp^5
     double temp = ActiveMatrix()->operator()(x,y,z);
-    if(temp>1273.0) { return 350.0;}
+    /*
+     if(temp>1273.0) { return 350.0;}
     if(temp>1173.15 && temp<=1273.15) { return 1100.0;}
     if(temp>1073.15 && temp<=1173.15) { return 1800.0;}
     if(temp>973.15 && temp<=1073.15) { return 2400.0;}
@@ -234,7 +237,10 @@ double Solver::Alpha(unsigned int x, unsigned int y, unsigned int z) {
     if(temp>473.15  && temp<=573.15)  { return 900.0;}
     if(temp>373.15  && temp<=473.15)  { return 550.0;}
     if(temp>273.15  && temp<=373.15)  { return 150.0;}
-    return 400.0;
+      */
+    //return 400.0;
+    double a = -5561.455 + 53.22458*temp - 0.1940006*pow(temp,2.0) + 0.0003336*pow(temp,3.0) - 2.548565e-7*pow(temp,4.0) + 6.988594e-11*pow(temp,5.0);
+    return a;
 }
 
 double Solver::Cp(unsigned int x, unsigned int y, unsigned int z) {
